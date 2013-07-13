@@ -1,0 +1,5 @@
+.idea
+.idea/*
+*.json
+*.txt
+*.dat
