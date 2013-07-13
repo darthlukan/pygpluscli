@@ -17,10 +17,7 @@ class Auth(object):
     """
     Google Authorization object.  Uses Web App OAuth2 flow
     to seit and get authentication so that we only have to interact
-    on initial setup.  Saves tokens in calendar.dat.  Needed for
-    sending events to Google Calendar.
-
-    Important: Everything is hardcoded, so no args needed.
+    on initial setup.  Saves tokens in secrets.dat.
     """
 
     def __init__(self):
