@@ -1,10 +1,11 @@
+import re
 import sys
-import time
 import json
 import gflags
 import httplib2
-from pprint import pprint
-from datetime import datetime, timedelta
+
+from time import sleep
+from datetime import datetime
 from oauth2client.tools import run
 from oauth2client.file import Storage
 from apiclient.discovery import build
@@ -83,8 +84,10 @@ class App(object):
         self.language = 'en'
         self.myId = 'me'  # The authed user (from initial authflow in Auth class.
         self.myCircledIds = []
+        self.posts = []
 
     def get_circled_people(self):
+        print "Populating circles list..."
         nextPageToken = None
         while True:
             request = self.service.people().list(userId=self.myId, collection='visible', pageToken=nextPageToken)
@@ -95,19 +98,39 @@ class App(object):
             try:
                 nextPageToken = peopleResource['nextPageToken']
             except KeyError:
+                print "Circles list built!"
                 break
         return self.myCircledIds
 
     def get_all_activities(self):
+        print "Getting posts..."
         activitiesResource = self.service.activities()
         for person in self.myCircledIds:
-            request = activitiesResource.list(userId=int(person), collection='public', maxResults=2)
+            request = activitiesResource.list(userId=int(person), collection='public', maxResults=1)
             if request is not None:
                 activitiesDoc = request.execute()
                 if 'items' in activitiesDoc:
                     for activity in activitiesDoc['items']:
-                        print activity['published'], activity['object']['content']
-                    print "======================================================="
+                        self.posts.append(activity)
+        print "Got all posts!"
+        return self.posts
+
+    def display_recent_activities(self):
+
+        today = datetime.today().strftime('%Y-%m-%d')
+
+        print "Checking for today's posts..."
+        for post in self.posts:
+            if today in post['published']:
+                content = post['object']['content']
+                text = re.sub('<[^<]+?>', '', content)
+                print "User:", post['actor']['displayName']
+                print "Date:", post['published']
+                print "Post:", text
+                print "=========================================="
+                sleep(60)
+            else:
+                continue
 
 
 def main():
@@ -116,12 +139,10 @@ def main():
     auth.get_authed_http()
     service = auth.build_service()
 
-    print "We have a service object!"
-    pprint(service)
-
     app = App(service)
     app.get_circled_people()
     app.get_all_activities()
+    app.display_recent_activities()
 
     return sys.exit()
 
