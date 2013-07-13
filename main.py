@@ -92,7 +92,6 @@ class App(object):
             if 'items' in peopleResource:
                 for person in peopleResource['items']:
                     self.myCircledIds.append(person['id'])
-                    print 'Got displayName %s with userid %s' % (person['displayName'], person['id'])
             try:
                 nextPageToken = peopleResource['nextPageToken']
             except KeyError:
@@ -102,7 +101,7 @@ class App(object):
     def get_all_activities(self):
         activitiesResource = self.service.activities()
         for person in self.myCircledIds:
-            request = activitiesResource.list(userId=person['id'], collection='public', maxResults=2)
+            request = activitiesResource.list(userId=int(person), collection='public', maxResults=2)
             if request is not None:
                 activitiesDoc = request.execute()
                 if 'items' in activitiesDoc:
@@ -121,8 +120,8 @@ def main():
     pprint(service)
 
     app = App(service)
-    people = app.get_circled_people()
-    pprint(people)
+    app.get_circled_people()
+    app.get_all_activities()
 
     return sys.exit()
 
