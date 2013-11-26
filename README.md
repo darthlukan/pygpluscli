@@ -71,3 +71,7 @@ then I'll update it.  Until then, read on.
     $ python2 main.py
 
 19. Enjoy!
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/darthlukan/pygpluscli/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
